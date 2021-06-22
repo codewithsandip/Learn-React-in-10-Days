@@ -2,23 +2,38 @@ import React from 'react';
 import VideoSearch from './VideoSearch';
 import VideoPlayer from './VideoPlayer';
 import VideoList from './VideoList';
+import youtube from '../api/youtube';
 
-const App = () => {
-    return (
-        <div className="ui container">
-            <div>
-                <VideoSearch />
-            </div>
-            <div>
+class App extends React.Component {
+
+    state = {
+        videos: []
+    }
+
+    onSearch = async (term) => {
+        const response = await youtube.get('/search', { params: { q: term } });
+        this.setState({
+            videos: response.data.items
+        });
+    }
+
+    render() {
+        return (
+            <div className="ui container">
                 <div>
-                    <VideoPlayer />
+                    <VideoSearch onSearch={this.onSearch} />
                 </div>
                 <div>
-                    <VideoList />
+                    <div>
+                        <VideoPlayer />
+                    </div>
+                    <div>
+                        <VideoList videos={this.state.videos} />
+                    </div>
                 </div>
             </div>
-        </div>
-    )
+        )
+    }
 }
 
 export default App;
